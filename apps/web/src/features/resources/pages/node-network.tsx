@@ -99,6 +99,11 @@ export const NodeNetwork = () => {
       tagLine={t('nodeNetwork.pageSubtitle')}
     >
       <div className="space-y-12 text-white">
+        {/* Segmento de prueba */}
+        <div>
+          <h1>solo es prueba</h1>
+        </div>
+
         {/* First section */}
         <div className="flex w-full justify-center px-4 sm:px-8">
           <div className="flex flex-col-reverse md:space-x-4 lg:flex-row">
