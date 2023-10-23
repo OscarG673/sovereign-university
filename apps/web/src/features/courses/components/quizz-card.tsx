@@ -89,11 +89,12 @@ export default function QuizzCard({
   }
 
   return (
-    <div className="border-blue-1000 bg-beige-400 flex w-full flex-col items-start gap-2.5 rounded-[1.25rem] border-2 p-2 px-5">
+    <div className="border-blue-1000 bg-beige-400 flex w-full flex-col items-start gap-1.5 rounded-[1.25rem] border-2 p-2 md:gap-2.5 md:px-5">
       {currentStep === 1 && (
         <QuizzCardQuestion
           name={name}
           chapter={chapter}
+          questionIndex={currentQuestionIndex}
           question={questions[currentQuestionIndex].question}
           correctAnswer={questions[currentQuestionIndex].correctAnswer}
           answers={questions[currentQuestionIndex].answers}
@@ -105,6 +106,7 @@ export default function QuizzCard({
         <QuizzCardResults
           name={name}
           chapter={chapter}
+          questionIndex={currentQuestionIndex}
           answers={[true, true, false, false]}
           answersColors={answersColors}
           numberOfCorrectAnswers={numberOfCorrectAnswers}
