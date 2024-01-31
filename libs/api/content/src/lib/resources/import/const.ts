@@ -1,4 +1,10 @@
-export const supportedCategories = ['books', 'podcasts', 'builders'] as const;
+export const supportedCategories = [
+  'books',
+  'podcasts',
+  'builders',
+  'key_dates',
+] as const;
+// This a change (key_dates)
 
 export type ResourceCategory = (typeof supportedCategories)[number];
 

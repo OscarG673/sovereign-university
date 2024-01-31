@@ -8,6 +8,7 @@ import { getContentType, getRelativePath } from '../../utils';
 
 import { createProcessChangedBook } from './categories/books';
 import { createProcessChangedBuilder } from './categories/builders';
+import { createProcessChangedDates } from './categories/key_dates'; //This another change
 import { createProcessChangedPodcast } from './categories/podcasts';
 import { assertSupportedCategoryPath } from './const';
 import type { ResourceCategory } from './const';
@@ -93,6 +94,7 @@ export const createProcessChangedResource =
       books: createProcessChangedBook,
       builders: createProcessChangedBuilder,
       podcasts: createProcessChangedPodcast,
+      key_dates: createProcessChangedDates, //this is a change I made
     } as const;
 
     const handler = mapHandlers[resource.category];
