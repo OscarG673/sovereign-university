@@ -12,3 +12,4 @@ export * from './podcast';
 export * from './professor';
 export * from './quiz';
 export * from './tutorial';
+export * from './date';

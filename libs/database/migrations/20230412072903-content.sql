@@ -234,3 +234,14 @@ CREATE TABLE IF NOT EXISTS content.tutorial_tags (
 
   PRIMARY KEY (tutorial_id, tag_id)
 );
+
+ --Key_dates
+CREATE TABLE IF NOT EXISTS content.date_events (
+  resource_id INTEGER PRIMARY KEY REFERENCES content.resources(id) ON DELETE CASCADE,
+  date VARCHAR(255) NOT NULL,
+  title TEXT NOT NULL,
+  exact_date DATE NOT NULL,
+  description TEXT,
+  image_url TEXT,
+  link_url TEXT
+);
