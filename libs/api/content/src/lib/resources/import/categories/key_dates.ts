@@ -4,8 +4,9 @@ import { Resource } from '@sovereign-university/types';
 import { ChangedResource } from '..';
 import { Dependencies } from '../../../dependencies';
 import { separateContentFiles, yamlToObject } from '../../../utils';
+import { createProcessMainFile } from '../main';
 
-interface DateEvent {
+interface DateEventMain {
   date: string;
   title: string;
   exact_date: string;
@@ -24,44 +25,64 @@ export const createProcessChangedDates = (
     return postgres
       .begin(async (transaction) => {
         const { main } = separateContentFiles(resource, 'dates.yml');
+
         try {
-          if (main && main.kind !== 'removed') {
-            const parsed = yamlToObject<DateEvent>(main.data);
-            const fullPath = `${resource.path}/dates.yml`;
+          const processMainFile = createProcessMainFile(transaction);
+          await processMainFile(resource, main);
+        } catch (error) {
+          errors.push(`Error processing file ${resource.path}: ${error}`);
+          return;
+        }
 
-            const id = await transaction<Resource[]>`
-              SELECT id FROM content.resources WHERE path = ${fullPath}
-            `
-              .then(firstRow)
-              .then((row) => row?.id);
+        // Continúa solo si main no es null y no es de tipo 'removed'
+        if (main && main.kind !== 'removed') {
+          const parsed = yamlToObject<DateEventMain>(main.data);
 
-            if (!id) {
-              throw new Error(`Resource not found for path ${fullPath}`);
-            }
+          // Obtiene el ID del recurso insertado o actualizado
+          const resourceResult = await transaction<Resource[]>`
+            SELECT id FROM content.resources WHERE path = ${resource.path}
+          `.then(firstRow);
+
+          if (!resourceResult) {
+            errors.push(`Resource not found for path ${resource.path}`);
+            return;
+          }
+
+          // Inserta o actualiza el evento de fecha clave
+          try {
+            console.log('Image URL:', parsed.image);
+            console.log('Link URL:', parsed.link);
 
             await transaction`
-            INSERT INTO content.date_events (
-              resource_id, date, title, exact_date, description, image_url, link_url
-            )
-            VALUES (
-              ${id}, ${parsed.date}, ${parsed.title}, ${parsed.exact_date},
-              ${parsed.description}, ${parsed.image}, ${parsed.link}
-            )
-            ON CONFLICT (resource_id) DO UPDATE SET
-              date = EXCLUDED.date,
-              title = EXCLUDED.title,
-              exact_date = EXCLUDED.exact_date,
-              description = EXCLUDED.description,
-              image_url = EXCLUDED.image,
-              link_url = EXCLUDED.link
-          `;
+    INSERT INTO content.date_events (
+      resource_id, date, title, exact_date, description, image_url, link_url
+    )
+    VALUES (
+      ${resourceResult.id},
+      ${parsed.date},
+      ${parsed.title},
+      ${parsed.exact_date},
+      ${parsed.description},
+      ${parsed.image},
+      ${parsed.link}
+    )  
+    ON CONFLICT (resource_id) DO UPDATE SET
+      date = EXCLUDED.date,
+      title = EXCLUDED.title,
+      exact_date = EXCLUDED.exact_date,
+      description = EXCLUDED.description,
+      image_url = EXCLUDED.image_url,
+      link_url = EXCLUDED.link_url
+  `;
+          } catch (error) {
+            errors.push(
+              `Error processing date event 1 for ${resource.path}: ${error}`,
+            );
           }
-        } catch (error) {
-          errors.push(`Error processing file ${main?.path}: ${error}`);
         }
       })
-      .catch(() => {
-        return;
+      .catch((error) => {
+        errors.push(`Transaction error for ${resource.path}: ${error}`);
       });
   };
 };
