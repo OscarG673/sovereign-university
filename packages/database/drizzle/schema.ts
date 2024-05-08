@@ -173,6 +173,31 @@ export const contentBuildersLocalized = content.table(
   }),
 );
 
+//Glossary
+export const contentGlossary = content.table(
+  'glossary',
+  {
+    id: serial('id').primaryKey().notNull(),
+    resourceId: integer('resource_id')
+      .notNull()
+      .references(() => contentResources.id, { onDelete: 'cascade' }),
+    word: varchar('word', { length: 255 }).notNull(),
+    definition: text('definition').notNull(),
+    letter: varchar('letter', { length: 1 }).notNull(),
+    language: varchar('language', { length: 10 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    idx: index().on(table.letter, table.language), // Index on 'letter' and 'language' for faster searches
+    unqWordLanguage: unique().on(table.word, table.language), // Ensure each word is unique per language
+  }),
+);
+
 // CONFERENCES
 
 export const contentConferences = content.table('conferences', {
