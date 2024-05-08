@@ -173,7 +173,7 @@ export const contentBuildersLocalized = content.table(
   }),
 );
 
-//Glossary
+//GLOSSARY
 export const contentGlossary = content.table(
   'glossary',
   {
