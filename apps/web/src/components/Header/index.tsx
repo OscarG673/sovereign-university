@@ -14,7 +14,7 @@ import {
   IoLibraryOutline,
   IoSchoolOutline,
 } from 'react-icons/io5';
-import { PiArmchair } from 'react-icons/pi';
+import { LuArmchair } from 'react-icons/lu';
 
 import { cn } from '@sovereign-university/ui';
 
@@ -152,7 +152,7 @@ export const Header = ({ variant = 'dark' }: HeaderProps) => {
               title: t('conferences.pageTitle'),
               description: t('menu.conferencesDescription'),
               path: Routes.Conferences,
-              icon: PiArmchair,
+              icon: LuArmchair,
             },
             {
               id: 'builders',
